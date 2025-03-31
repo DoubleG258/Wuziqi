@@ -2,7 +2,7 @@
 #include<graphics.h>
 
 int main() {
-	initgraph(600, 500);//创建矩形窗口
+	initgraph(600, 500,1);//创建矩形窗口
 	//定义一个存储图片的变量
 	IMAGE img;
 	// 加载图片
@@ -15,6 +15,20 @@ int main() {
 			赋值
 			显示输出
 	*/
+
+	//绘制500 500棋盘  20*20格子
+	setlinecolor(BLACK);
+	setlinestyle(PS_SOLID, 1);
+	for (int i = 0; i <= 20; i++) {
+		line(0, i*25, 500, i*25);
+		line(i * 25, 0, i * 25, 500);
+	}
+
+
+
+
+
+
 
 	getchar();//卡屏
 	closegraph();//关闭窗口
