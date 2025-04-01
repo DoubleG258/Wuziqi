@@ -1,5 +1,8 @@
 #include<stdio.h>
 #include<graphics.h>
+#include<math.h>
+int flag = 0;//标记黑与白
+int ChessMap[20][20] = {0};
 
 void initGame() {
 	initgraph(600, 500);
@@ -16,10 +19,90 @@ void initGame() {
 	outtextxy(510, 100, "玩家2：白棋");
 }
 
+int judge(int Mapx, int Mapy) {
+	int temp = 2 - flag % 2;
+	//判定横是否链接在一起
+	for (int i = Mapx , j = Mapy-4; j<= Mapy;j++) {
+		if (j >= 1 && j < 16 &&temp==ChessMap[i][j] && temp == ChessMap[i][j + 1] && temp == ChessMap[i][j + 2] && temp == ChessMap[i][j + 3] && temp == ChessMap[i][j + 4]) {
+			return 1;
+		}
+	}
+	//判断竖是否连接在一起
+	for (int i = Mapx-4, j = Mapy ; i<= Mapx; i++) {
+		if (i >= 1 && i < 16 && temp == ChessMap[i][j] && temp == ChessMap[i+1][j ] && temp == ChessMap[i+2][j ] && temp == ChessMap[i+3][j] && temp == ChessMap[i+4][j]) {
+			return 1;
+		}
+	}
+	//左斜线
+	for (int i = Mapx - 4, j = Mapy - 4; j <= Mapy, i <= Mapx; j++, i++) {
+		if (i >= 1 && i < 16 && temp == ChessMap[i][j] && temp == ChessMap[i + 1][j + 1] && temp == ChessMap[i + 2][j + 2] && temp == ChessMap[i + 3][j + 3] && temp == ChessMap[i + 4][j + 4]) {
+			return 1;
+		}
+	}
+	//右斜线
+	for (int i = Mapx - 4, j = Mapy + 4; j >= Mapy ,i <= Mapx; j--, i++) {
+		if (i >= 1 && i < 16 && temp == ChessMap[i][j] && temp == ChessMap[i + 1][j - 1] && temp == ChessMap[i + 2][j - 2] && temp == ChessMap[i + 3][j - 3] && temp == ChessMap[i + 4][j - 4]) {
+			return 1;
+		}
+	}
 
+	return 0;
+}
+
+void playGame() {
+	int cx = 0, cy = 0;//棋子的坐标
+	int Mapx=0, Mapy=0;//记录棋盘坐标
+	MOUSEMSG Msg;
+
+	while (1) {
+		Msg = GetMouseMsg();
+		for (int i = 1; i < 20; i++) {
+			for (int j = 1; j < 20; j++) {
+				if (abs(Msg.x - j * 25) < 12 && abs(Msg.y - i * 25) < 12) {
+					cx = j * 25;
+					cy = i * 25;
+					Mapx = i;
+					Mapy = j;
+				}
+			}
+		}
+		printf("cx=%d,cy=%d\n", cx, cy);
+		//绘制棋子
+		if (Msg.uMsg == WM_LBUTTONDOWN) {
+			if (flag % 2 == 0) {
+				setfillcolor(BLACK);
+				solidcircle(cx, cy, 9);
+				ChessMap[Mapx][Mapy] = 1;//黑色棋子标记为1
+			}
+			else {
+				setfillcolor(WHITE);
+				solidcircle(cx, cy, 9);
+				ChessMap[Mapx][Mapy] = 2;//白色棋子标记为2
+			}
+			flag++;
+		}
+		
+		if (judge(Mapx,Mapy)) {
+			if (1 == flag % 2) {
+				MessageBox(NULL, "玩家1：黑棋胜利", "Game Over", MB_OK);
+				return;
+			}
+			else {
+				MessageBox(NULL, "玩家2：白棋胜利", "Game Over", MB_OK);
+				return;
+			}
+		}
+
+	}
+
+}
 int main() {
 	initGame();
+	
 
+	setfillcolor(WHITE);
+	playGame();
+	
 
 
 	getchar();//卡屏
