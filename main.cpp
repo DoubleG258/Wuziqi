@@ -1,6 +1,9 @@
 #include<stdio.h>
 #include<graphics.h>
 #include<math.h>
+#include<mmsystem.h>
+#pragma comment(lib,"winmm.lib")
+
 int flag = 0;//标记黑与白
 int ChessMap[20][20] = {0};
 
@@ -53,6 +56,7 @@ void playGame() {
 	int cx = 0, cy = 0;//棋子的坐标
 	int Mapx=0, Mapy=0;//记录棋盘坐标
 	MOUSEMSG Msg;
+	HWND hwnd = GetHWnd();//获取窗口句柄
 
 	while (1) {
 		Msg = GetMouseMsg();
@@ -69,6 +73,12 @@ void playGame() {
 		printf("cx=%d,cy=%d\n", cx, cy);
 		//绘制棋子
 		if (Msg.uMsg == WM_LBUTTONDOWN) {
+
+			if (ChessMap[Mapx][Mapy] != 0) {
+				MessageBox(hwnd, "这里有棋子了", MB_OK);
+				continue;
+			}
+
 			if (flag % 2 == 0) {
 				setfillcolor(BLACK);
 				solidcircle(cx, cy, 9);
@@ -84,11 +94,11 @@ void playGame() {
 		
 		if (judge(Mapx,Mapy)) {
 			if (1 == flag % 2) {
-				MessageBox(NULL, "玩家1：黑棋胜利", "Game Over", MB_OK);
+				MessageBox(hwnd, "玩家1：黑棋胜利", "Game Over", MB_OK);
 				return;
 			}
 			else {
-				MessageBox(NULL, "玩家2：白棋胜利", "Game Over", MB_OK);
+				MessageBox(hwnd, "玩家2：白棋胜利", "Game Over", MB_OK);
 				return;
 			}
 		}
@@ -104,8 +114,6 @@ int main() {
 	playGame();
 	
 
-
-	getchar();//卡屏
 	closegraph();//关闭窗口
 	return 0;
 }
